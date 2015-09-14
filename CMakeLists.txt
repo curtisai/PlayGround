@@ -1,4 +1,6 @@
-
-project (FizzBuzz)
-
-add_executable (FizzBuzz FizzBuzz.cpp)
+project (Factorial)
+add_executable (Factorial Factorial.cpp Factorial.h main.cpp)
+add_executable(googletesttry googletesttry.cpp Factorial.h Factorial.cpp )
+target_link_libraries(googletesttry gtest gtest_main)
+include_directories(/usr/include/gtest/)
+enable_testing()

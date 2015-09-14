@@ -1,3 +1,1 @@
-
-
 int Factorial(int n);
