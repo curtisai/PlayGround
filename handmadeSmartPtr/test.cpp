@@ -5,12 +5,19 @@
 
 TEST(StackGuardTest, TheTest){
 	
-	std::string* mptr = new std::string("this is the test string A");
-	sgdm::StackGuard<std::string> strPtrA(mptr);
-	//sgdm::StackGuard<std::string> strPtrB = new std::string("this is the test string B");
+	//std::string* mptr = new std::string("this is the test string A");
+	sgdm::StackGuard<std::string> strPtrA(new std::string("this is the test string A"));
+	sgdm::StackGuard<std::string> strPtrB(new std::string("this is the test string B"));
 
 	EXPECT_EQ("this is the test string A",*strPtrA);
-	//EXPECT_EQ("this is the test string B",*strPtrB);
+	EXPECT_EQ("this is the test string B",*strPtrB);
+	EXPECT_EQ(strPtrA->size(), strPtrB->size());
+	EXPECT_EQ(!strPtrA, false);
+	EXPECT_EQ(strPtrA!=false, true);
+	sgdm::StackGuard<std::string> strPtrC(strPtrA);
+	EXPECT_EQ(!strPtrA, true);
+	EXPECT_EQ(strPtrA!=false, false);
+
 }
 
 

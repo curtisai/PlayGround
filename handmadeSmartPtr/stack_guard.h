@@ -12,13 +12,14 @@ namespace sgdm{
 	  public:
 	  	StackGuard(T* guarded) throw();
 	  	StackGuard(StackGuard<T>& newPtr) throw();
+	  	//StackGuard(StackGuard<T> newPtr) throw();  //might result in infinit calls
 	  	~StackGuard();
 
 	  	const T* operator->();
 
 	  	StackGuard& operator=(StackGuard& rhs) throw();
 	  	StackGuard& operator=(StackGuard&& rhs) throw();
-	  	StackGuard& operator=(T* rhs) throw();
+	  	//StackGuard& operator=(T* rhs) throw();
 	  	const T& operator*();
 
 	  	const bool operator==(const bool rhs);
@@ -33,10 +34,12 @@ namespace sgdm{
 	}
 
 	template<typename T>
-	StackGuard<T>::StackGuard(StackGuard<T>& newPtr) throw(){
+	StackGuard<T>::StackGuard(StackGuard<T>& newPtr) throw(){//cannot be const
 		thePtr = newPtr.thePtr;
 		newPtr.thePtr = NULL;
 	}
+
+
 
 	template<typename T>
 	StackGuard<T>::~StackGuard(){
@@ -68,15 +71,15 @@ namespace sgdm{
 		}
 		return *this;
 	}
-
+/*
 	template<typename T>
 	StackGuard<T>& StackGuard<T>::operator=(T* rhs) throw(){
 		if(thePtr!=NULL)
 			delete thePtr;
 		thePtr = rhs;
-		return *this;
+		return this;
 	}
-
+*/
 	template<typename T>
 	const T& StackGuard<T>::operator*(){
 		return *thePtr;
@@ -84,7 +87,10 @@ namespace sgdm{
 
 	template<typename T>
 	const bool StackGuard<T>::operator!=(const bool rhs){
-		return thePtr^rhs;
+		if(thePtr==NULL)
+			return false^rhs;
+		else
+			return true^rhs;
 	}
 
 	template<typename T>
