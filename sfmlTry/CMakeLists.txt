@@ -1,0 +1,7 @@
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+INCLUDE_DIRECTORIES(/usr/include/SFML/)
+SET(LibPath /usr/lib/)
+SET(Libs ${LibPath}libsfml-audio.so ${LibPath}libsfml-graphics.so ${LibPath}libsfml-network.so ${LibPath}libsfml-system.so ${LibPath}libsfml-window.so)
+SET(CMAKE_CXX_FLAGS "-g")
+ADD_EXECUTABLE(sfmlTry sfmlTry.cpp)
+TARGET_LINK_LIBRARIES(sfmlTry ${Libs} pthread)
