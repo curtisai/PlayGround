@@ -1,0 +1,2 @@
+
+add_library(DynamicArray dynamic_array.h dynamic_array.cpp ${CountingAllocator_SOURCE_DIR}/src/engine/memory/counting_allocator.h ${CountingAllocator_SOURCE_DIR}/src/engine/memory/counting_allocator.cpp)
