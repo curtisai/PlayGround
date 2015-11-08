@@ -128,10 +128,8 @@ class JsonParser{
 	}
 
 	int getTok(){
-	
-			lastChar = ' ';
 
-		//eat all white spaces
+		
  		while(isspace(lastChar)){
 			lastChar = getChar();
 		}
@@ -146,6 +144,7 @@ class JsonParser{
 					idString += lastChar;
 				}
 				if(lastChar == '\''){
+					lastChar = getChar();
 					return tok_identifier;
 				}
 				else
@@ -165,6 +164,8 @@ class JsonParser{
 			while(isdigit(lastChar) || lastChar == '.'){
 				if(lastChar == '.' && isInteger == false)
 					return tok_error;
+				if (lastChar == '.')
+					isInteger = false;
 				numberString += lastChar;
 				lastChar = getChar();
 			}
@@ -183,8 +184,9 @@ class JsonParser{
 		if(lastChar == EOF)
 			return tok_endl;
 
-
-		return lastChar;
+		int thisChar = lastChar;
+		lastChar = getChar();
+		return thisChar;
 
 	}
 
@@ -231,10 +233,10 @@ class JsonParser{
 			getNextTok();//eat {
 			while(currentTok != '}'){
 				if(currentTok == ',')
-					getNextTok();//eat :
+					getNextTok();//eat ,
 				resObject->push_back(ParsePair());
 			}
-			//getNextTok();
+			getNextTok(); //eat }
 			return resObject;
 		}
 	}
@@ -244,23 +246,16 @@ class JsonParser{
 	JsonPair* ParsePair(){
 		JsonName* pairName;
 		JsonValue* pairValue;
-			//if(currentTok != tok_identifier)
-			//	return (JsonPair*)Error("Not a valid name");
-			//else{
-			//	getNextTok();
-			//	if(currentTok != '\'')
-			//		return (JsonPair*)Error("Expecting \" at the end");
-			//	else{
-					pairName = new JsonName(idString);
-					getNextTok();
-					if(currentTok != ':'){
-						delete pairName;
-						return (JsonPair*)Error("Expecting :");
-					}
-					else{
-						getNextTok(); //eat :
-						pairValue = ParsePrimary();
-					}
+		pairName = new JsonName(idString);
+		getNextTok();
+		if(currentTok != ':'){
+			delete pairName;
+			return (JsonPair*)Error("Expecting :");
+		}
+		else{
+			getNextTok(); //eat :
+			pairValue = ParsePrimary();
+		}
 		return new JsonPair(pairName, pairValue);
 	}
 
@@ -276,8 +271,9 @@ class JsonParser{
 				getNextTok();
 				continue;
 			}
-			else
+			else {
 				array->push_back(ParsePrimary());
+			}	
 		}
 		getNextTok(); //eat ]
 		return array;
@@ -324,7 +320,7 @@ class JsonParser{
 
   	void Parse(){
 		getNextTok();
-		if (currentTok == '{')    //error handling needed
+		/*if (currentTok == '{')    *///error handling needed
 			parseResult =  ParsePrimary();
   	}
 
