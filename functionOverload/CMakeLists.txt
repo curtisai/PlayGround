@@ -1,0 +1,4 @@
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+ADD_EXECUTABLE(OverLoad function_overload.h source.cpp)
+SET(CMAKE_CXX_FLAGS "-g")
+ADD_DEFINITIONS(-std=c++11)

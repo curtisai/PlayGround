@@ -10,8 +10,8 @@ namespace sgdm{
 	  	T* thePtr;
 
 	  public:
-	  	StackGuard(T* guarded) throw();
-	  	StackGuard(StackGuard<T>& newPtr) throw();
+	  	explicit StackGuard(T* guarded) throw();
+	  	explicit StackGuard(StackGuard<T>& newPtr) noexcept;
 	  	//StackGuard(StackGuard<T> newPtr) throw();  //might result in infinit calls
 	  	~StackGuard();
 

@@ -26,14 +26,15 @@ public:
 class JsonObject : public JsonValue{
 	std::vector<JsonPair*> v;// or JsonPair
   public:
-	  JsonObject() :v(){}
-	  virtual ~JsonObject(){}
-	  void push_back(JsonPair* newPair){
-  		v.push_back(newPair);
+  	JsonObject() :v(){}
+	virtual ~JsonObject(){}
+	void push_back(JsonPair* newPair){
+		v.push_back(newPair);
   	}
 
-	  JsonPair* operator[](int index){
-  		return v[index];
+
+	JsonPair* operator[](int index){
+		return v[index];
   	}
 
 };

@@ -8,6 +8,8 @@ TEST(StackGuardTest, TheTest){
 	//std::string* mptr = new std::string("this is the test string A");
 	sgdm::StackGuard<std::string> strPtrA(new std::string("this is the test string A"));
 	sgdm::StackGuard<std::string> strPtrB(new std::string("this is the test string B"));
+	int intPtr = 100;
+	sgdm::StackGuard<int>strPtrD(&intPtr);
 
 	EXPECT_EQ("this is the test string A",*strPtrA);
 	EXPECT_EQ("this is the test string B",*strPtrB);
