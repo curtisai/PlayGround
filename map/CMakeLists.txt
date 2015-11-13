@@ -1,2 +1,3 @@
-
-add_library(DynamicArray dynamic_array.h dynamic_array.cpp ${CountingAllocator_SOURCE_DIR}/src/engine/memory/counting_allocator.h ${CountingAllocator_SOURCE_DIR}/src/engine/memory/counting_allocator.cpp)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+ADD_EXECUTABLE(TRY main.cpp map.h)
+ADD_DEFINITIONS(-std=c++11)
