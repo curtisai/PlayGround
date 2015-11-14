@@ -9,6 +9,7 @@
 #include <memory>
 #include <cstddef>
 #include <iostream>
+#include "stack_guard.h"
 //under score is allowed in name
 
 class JsonPair;
@@ -67,38 +68,42 @@ class JsonDouble : public JsonValue{
 
 class JsonArray : public JsonValue{
   private:
-  	std::vector<JsonValue*> arrayElements;
+  	std::vector<sgdm::StackGuard<JsonEntity>> arrayElements;
   public:
   	JsonArray():arrayElements(){}
-	void push_back(JsonValue* element){
+	void push_back(sgdm::StackGuard<JsonEntity> element){
 		arrayElements.push_back(element);
 	}
   	virtual ~JsonArray(){
+  		/*
   		for(unsigned int i = 0; i < arrayElements.size(); i++){
-  			if(arrayElements[i] != NULL)
+  			if(arrayElements[i] != nullptr)
   				delete arrayElements[i];
   		}
+  		*/
   	}
 };
 
 class JsonPair : public JsonValue{
   private:
-  	JsonName* lhs;
-  	JsonValue* rhs;
+  	sgdm::StackGuard<JsonEntity> lhs;
+  	sgdm::StackGuard<JsonEntity> rhs;
   public:
-  	JsonPair(JsonName* LHS, JsonValue* RHS) : lhs(LHS) , rhs(RHS){}
+  	JsonPair(sgdm::StackGuard<JsonEntity>&& LHS, sgdm::StackGuard<JsonEntity>&& RHS) : lhs(LHS) , rhs(RHS){}
   	virtual ~JsonPair(){
-  		if(lhs != NULL)
+  		/*
+  		if(lhs != nullptr)
   			delete lhs;
-  		if(rhs != NULL)
+  		if(rhs != nullptr)
   			delete rhs;
+  			*/
   	}
 };
 
 
 class JsonParser{
   private:
-  	JsonEntity* parseResult;
+  	//StackGuard<JsonEntity> parseResult;
 
   	//tokens
 	enum elementToken{
@@ -200,35 +205,36 @@ class JsonParser{
 	}
 
 	//helper function for error handling
-	JsonEntity* Error(std::string errorMsg){
+	sgdm::StackGuard<JsonEntity> Error(std::string errorMsg){
 		std::cout<< errorMsg<<std::endl;
-		return NULL;
+		return std::move(sgdm::StackGuard<JsonEntity>());
 	}
 
 	//Parsers begins
-	JsonInteger* ParseInteger(){
-		JsonInteger* res = new JsonInteger(inputIntger);
+	sgdm::StackGuard<JsonEntity> ParseInteger(){
+		//JsonInteger* res = new JsonInteger(inputIntger);
+		sgdm::StackGuard<JsonEntity> res(new JsonInteger(inputIntger));
 		getNextTok();
-		return res;
+		return std::move(res);
 	}
 
-	JsonDouble* ParseDouble(){
-		JsonDouble* res = new JsonDouble(inputDouble);
+	sgdm::StackGuard<JsonEntity> ParseDouble(){
+		sgdm::StackGuard<JsonEntity> res(new JsonDouble(inputDouble));
 		getNextTok();
-		return res;
+		return std::move(res);
 	}
 
-	JsonName* ParseName(){
-		JsonName* res = new JsonName(idString);
+	sgdm::StackGuard<JsonEntity> ParseName(){
+		sgdm::StackGuard<JsonEntity> res(new JsonName(idString));
 		getNextTok();
-		return res;
+		return std::move(res);
 	}
 
-	JsonValue* ParseObject(){
-		JsonObject* resObject = new JsonObject();
+	sgdm::StackGuard<JsonEntity> ParseObject(){
+		sgdm::StackGuard<JsonEntity> resObject(new JsonObject());
 		if(currentTok != '{'){
-			delete resObject;
-			return (JsonValue*)Error("Expecting { at entity beginning");
+			//delete resObject;
+			return Error("Expecting { at entity beginning");
 		}
 		else{
 			getNextTok();//eat {
@@ -238,33 +244,33 @@ class JsonParser{
 				resObject->push_back(ParsePair());
 			}
 			getNextTok(); //eat }
-			return resObject;
+			return std::move(resObject);
 		}
 	}
 
 
 
-	JsonPair* ParsePair(){
-		JsonName* pairName;
-		JsonValue* pairValue;
-		pairName = new JsonName(idString);
+	sgdm::StackGuard<JsonEntity> ParsePair(){
+		//JsonName* pairName;
+		//JsonValue* pairValue;
+		sgdm::StackGuard<JsonEntity> pairName(new JsonName(idString));
 		getNextTok();
 		if(currentTok != ':'){
-			delete pairName;
-			return (JsonPair*)Error("Expecting :");
+			//delete pairName;
+			return Error("Expecting :");
 		}
 		else{
 			getNextTok(); //eat :
-			pairValue = ParsePrimary();
+			sgdm::StackGuard<JsonEntity> pairValue(ParsePrimary());
 		}
-		return new JsonPair(pairName, pairValue);
+		return std::move(new JsonPair(std::move(pairName),std::move(pairValue)));
 	}
 
-	JsonArray* ParseArray(){
-		JsonArray* array = new JsonArray();
+	sgdm::StackGuard<JsonEntity>  ParseArray(){
+		sgdm::StackGuard<JsonEntity> array(new JsonArray());
 		if(currentTok != '['){
-			delete array;
-			return (JsonArray*)Error("Expecting new");
+			//delete array;
+			return Error("Expecting new");
 		}
 		getNextTok();
 		while(currentTok != ']'){
@@ -277,15 +283,15 @@ class JsonParser{
 			}	
 		}
 		getNextTok(); //eat ]
-		return array;
+		return std::move(array);
 
 	}
 
-	JsonValue* ParsePrimary(){
+	sgdm::StackGuard<JsonEntity>  ParsePrimary(){
 		//getNextTok();
 		switch(currentTok){
 		case tok_endl:
-			return NULL;
+			return Error("primary fail");
 		case tok_identifier:
 			return ParseName();
 		case tok_integer:
@@ -310,19 +316,19 @@ class JsonParser{
   		indexCount = 0;
   		inputDouble = 0;
   		inputIntger =0;
-  		parseResult = NULL;
+  		//parseResult = NULL;
 		lastChar = ' ';
   	}
 
   	~JsonParser(){
-  		if(parseResult != NULL)
-  			delete parseResult;
+  		//if(parseResult != NULL)
+  			//delete parseResult;
   	}
 
   	void Parse(){
 		getNextTok();
 		/*if (currentTok == '{')    *///error handling needed
-			parseResult =  ParsePrimary();
+			sgdm::StackGuard<JsonEntity> parseResult(ParsePrimary());
   	}
 
 };
