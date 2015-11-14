@@ -21,7 +21,7 @@ namespace sgdm{
 	  	 
 	  	~StackGuard();
 
-	  	const T* operator->();
+	  	T* operator->();
 
 	  	//StackGuard& operator=(StackGuard& rhs) throw();
 	  	StackGuard& operator=(StackGuard&& rhs) noexcept;
@@ -55,7 +55,7 @@ namespace sgdm{
 	}
 
 	template<typename T>
-	const T* StackGuard<T>::operator->(){
+	T* StackGuard<T>::operator->(){
 		return thePtr;
 	}
 /*

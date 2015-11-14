@@ -12,11 +12,12 @@
 #include "stack_guard.h"
 //under score is allowed in name
 
-class JsonPair;
+
 
 class JsonEntity{
 public:
 	virtual ~JsonEntity(){}
+	virtual void push_back(sgdm::StackGuard<JsonEntity> element){}
 };
 
 class JsonValue : public JsonEntity {
@@ -24,18 +25,39 @@ public:
 	virtual ~JsonValue(){}
 };
 
+class JsonPair : public JsonValue{
+  private:
+  	sgdm::StackGuard<JsonEntity> lhs;
+  	sgdm::StackGuard<JsonEntity> rhs;
+  public:
+  	JsonPair(sgdm::StackGuard<JsonEntity>&& LHS, sgdm::StackGuard<JsonEntity>&& RHS) : lhs(std::move(LHS)) , rhs(std::move(RHS)){}
+  	virtual ~JsonPair(){
+  		/*
+  		if(lhs != nullptr)
+  			delete lhs;
+  		if(rhs != nullptr)
+  			delete rhs;
+  			*/
+  	}
+    
+};
+
+
+
+
+
 class JsonObject : public JsonValue{
-	std::vector<JsonPair*> v;// or JsonPair
+	std::vector<sgdm::StackGuard<JsonEntity>> v;// or JsonPair
   public:
   	JsonObject() :v(){}
 	virtual ~JsonObject(){}
-	void push_back(JsonPair* newPair){
-		v.push_back(newPair);
+	virtual void push_back(sgdm::StackGuard<JsonEntity> newPair){
+		v.push_back(std::move(newPair));
   	}
 
 
-	JsonPair* operator[](int index){
-		return v[index];
+    JsonEntity operator[](int index) {
+		return *v[index];
   	}
 
 };
@@ -72,7 +94,7 @@ class JsonArray : public JsonValue{
   public:
   	JsonArray():arrayElements(){}
 	void push_back(sgdm::StackGuard<JsonEntity> element){
-		arrayElements.push_back(element);
+		arrayElements.push_back(std::move(element));
 	}
   	virtual ~JsonArray(){
   		/*
@@ -84,21 +106,7 @@ class JsonArray : public JsonValue{
   	}
 };
 
-class JsonPair : public JsonValue{
-  private:
-  	sgdm::StackGuard<JsonEntity> lhs;
-  	sgdm::StackGuard<JsonEntity> rhs;
-  public:
-  	JsonPair(sgdm::StackGuard<JsonEntity>&& LHS, sgdm::StackGuard<JsonEntity>&& RHS) : lhs(LHS) , rhs(RHS){}
-  	virtual ~JsonPair(){
-  		/*
-  		if(lhs != nullptr)
-  			delete lhs;
-  		if(rhs != nullptr)
-  			delete rhs;
-  			*/
-  	}
-};
+
 
 
 class JsonParser{
@@ -241,7 +249,7 @@ class JsonParser{
 			while(currentTok != '}'){
 				if(currentTok == ',')
 					getNextTok();//eat ,
-				resObject->push_back(ParsePair());
+				resObject->push_back(std::move(ParsePair()));
 			}
 			getNextTok(); //eat }
 			return std::move(resObject);
@@ -261,9 +269,10 @@ class JsonParser{
 		}
 		else{
 			getNextTok(); //eat :
-			sgdm::StackGuard<JsonEntity> pairValue(ParsePrimary());
+			sgdm::StackGuard<JsonEntity> pairValue(std::move(ParsePrimary()));
+            return std::move(new JsonPair(std::move(pairName),std::move(pairValue)));
 		}
-		return std::move(new JsonPair(std::move(pairName),std::move(pairValue)));
+		
 	}
 
 	sgdm::StackGuard<JsonEntity>  ParseArray(){
@@ -279,7 +288,7 @@ class JsonParser{
 				continue;
 			}
 			else {
-				array->push_back(ParsePrimary());
+				array->push_back(std::move(ParsePrimary()));
 			}	
 		}
 		getNextTok(); //eat ]
@@ -291,22 +300,24 @@ class JsonParser{
 		//getNextTok();
 		switch(currentTok){
 		case tok_endl:
-			return Error("primary fail");
+                return std::move(Error("primary fail"));
 		case tok_identifier:
-			return ParseName();
+			return std::move(ParseName());
 		case tok_integer:
-			return ParseInteger();
+			return std::move(ParseInteger());
 		case tok_double:
-			return ParseDouble();
+			return std::move(ParseDouble());
 		//case '\'':
 		//{
 		//		getNextTok();
 		//		return ParseName();
 		//	}
 		case '[':
-			return ParseArray();
+			return std::move(ParseArray());
 		case '{':
-			return ParseObject();
+			return std::move(ParseObject());
+                default:
+                return std::move(Error("error"));
 		
 		}
 	}
@@ -325,10 +336,10 @@ class JsonParser{
   			//delete parseResult;
   	}
 
-  	void Parse(){
+  	sgdm::StackGuard<JsonEntity> Parse(){
 		getNextTok();
 		/*if (currentTok == '{')    *///error handling needed
-			sgdm::StackGuard<JsonEntity> parseResult(ParsePrimary());
+        return std::move(ParsePrimary());
   	}
 
 };
