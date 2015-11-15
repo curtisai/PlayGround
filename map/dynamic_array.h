@@ -19,10 +19,10 @@ namespace sgdc{
 	  	inline void enlarge();
 	  	inline void shiftRight(int index, int count);
 	  	inline void shiftLeft(int index, int count);
-
-
+	  	DynamicArray(const DynamicArray<T>& other);
 	  public:
-	  	DynamicArray(sgdm::IAllocator<T> &alloc);
+	  	DynamicArray(sgdm::IAllocator<T> &alloc, int initSize = 100);
+	  	explicit DynamicArray(DynamicArray<T>&& other);
 	  	~DynamicArray();
 
 
@@ -35,13 +35,23 @@ namespace sgdc{
 	  	T popFront();
 	  	const unsigned int getLength();
 	  	const T at(unsigned int index);
-	  	//T operator[](int index);
-	  	const T operator[](unsigned int index);
+	  	T& operator[](unsigned int index);
+	  	T operator[](unsigned int index) const;
 	  	T removeAt(unsigned int index);
 	  	void insertAt(unsigned int index, const T& element);
 	  	
 	};
 
+
+	template<typename T>
+	DynamicArray<T>::DynamicArray(DynamicArray<T>&& other){
+		end = other.end;
+		max = other.max;
+		expand = other.expand;
+		elementSize = other.elementSize;
+		contents = other.contents;
+		other.contents = nullptr;
+	}
 
 	template<typename T>
 	void DynamicArray<T>::enlarge(){
@@ -57,9 +67,12 @@ namespace sgdc{
 
 	}
 
-	const int getMax(){
+
+	template<typename T>
+	const int DynamicArray<T>::getMax(){
 		return max;
 	}
+
 	
 	template<typename T>
 	void DynamicArray<T>::shiftRight(int index, int count){
@@ -99,7 +112,7 @@ namespace sgdc{
 
 
 	template<typename T>
-	DynamicArray<T>::DynamicArray(sgdm::IAllocator<T> &alloc, int initSize = 100):elementAllocator(alloc){
+	DynamicArray<T>::DynamicArray(sgdm::IAllocator<T> &alloc, int initSize):elementAllocator(alloc){
 		//elementAllocator = alloc; class-member reference type must 
 		//be initialized in the constructor initialization list
 		expand = initSize;
@@ -117,7 +130,7 @@ namespace sgdc{
 			}
 		}
 		elementAllocator.~IAllocator();
-		contents = NULL;
+		contents = nullptr;
 	}
 
 	template<typename T>
@@ -179,15 +192,15 @@ namespace sgdc{
 		else
 			return contents[index];
 	}
-/*
-	template<typename T>
-	T DynamicArray<T>::operator[](unsigned int index){
-		return contents[index];
-	}
-*/
 
 	template<typename T>
-	const T DynamicArray<T>::operator[](unsigned int index){
+	T DynamicArray<T>::operator[](unsigned int index) const{
+		return contents[index];
+	}
+
+
+	template<typename T>
+	T& DynamicArray<T>::operator[](unsigned int index){
 		return contents[index];
 	}
 

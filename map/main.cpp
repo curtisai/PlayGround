@@ -14,8 +14,7 @@ int main(){
 	CountingAllocator<ThePair<string>> alloc;
 	Map<string, ThePair> myMap(&alloc);
 	string greetings = "world";
-	myMap.push(ThePair<string>("hello",greetings));
-	cout<<myMap.output()<<endl;
+	myMap.push("hello", greetings);
 
 
 
