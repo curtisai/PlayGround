@@ -67,7 +67,8 @@ namespace sgdm{
 	}
 
 
-
+//******************************************
+	//here is the problem
 	template<typename T>
 	T* IAllocator<T>::get(int count){
 		swap = allocatedAddress;

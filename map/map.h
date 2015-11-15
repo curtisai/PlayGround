@@ -15,9 +15,7 @@ namespace sgdc{
 	  		int insertCount;
 	  public:
 	  		ThePair(const std::string& key, const T& element):pairKey(key), pairElement(element){}
-	  		//ThePair():pairKey(),pairElement(){} //this might be not necessary
-	  		~ThePair(){
-	  		}
+	  		~ThePair(){}
 	  		const std::string& getKey(){
 	  			return pairKey;
 	  		}
@@ -36,6 +34,7 @@ namespace sgdc{
 
 
 	  	void push(const string& key, const T& value);
+	  	void push(const NodeType<T>& newPair);
 	  	T output() const;
 
 	  	
@@ -49,7 +48,7 @@ namespace sgdc{
 
 	  private:
 	  	//int initSize;  needed no more
-	  	DynamicArray<NodeType<T>>* mapArray[50];
+	  	DynamicArray<NodeType<T>>* mapArray[101];
 
 	  	unsigned int hashFunction(const string& key);
         //int insertCount; needed no more
@@ -61,12 +60,12 @@ namespace sgdc{
 		for(int i = 0; i < key.size(); i++){
 			res ^= key[i] + 0x9e3779b9 + (res << 6) + (res >> 2);
 		}
-		return res % 50;
+		return res % 100;
 	}
 
 	template<typename T, template<typename> class NodeType>
 	Map<T, NodeType>::Map(sgdm::IAllocator<NodeType<T>> *alloc){
-		for(int i =0; i < 10; i++){
+		for(int i =0; i < 100; i++){
 			mapArray[i] = new DynamicArray<NodeType<T>>(*alloc);
 		}
 		//insertCount = 0;
@@ -84,10 +83,16 @@ namespace sgdc{
 	}
 
 	template<typename T, template<typename> class NodeType>
+	void Map<T, NodeType>::push(const NodeType<T>& newPair){
+		unsigned int index = hashFunction(newPair.getKey());
+		mapArray[index]->push(newPair);
+	}
+
+	template<typename T, template<typename> class NodeType>
 	bool Map<T, NodeType>::has(const string& key){
 		unsigned int index = hashFunction(key);
 		for(int i = 0; i < mapArray[index]->getLength(); i++){
-			if(key == (*mapArray[index])[i]->getKey())return true;
+			if(key == (*mapArray[index])[i].getKey())return true;
 		}
 		return false;
 	}
@@ -96,8 +101,8 @@ namespace sgdc{
 	T Map<T, NodeType>::remove(const string& key){
 		unsigned int index = hashFunction(key);
 		for(int i = 0; i< mapArray[index]->getLength();i++){
-			if(key==(*mapArray[index])[i]->getKey()){
-				T res((*mapArray[index])[i]->getValue());
+			if(key==(*mapArray[index])[i].getKey()){
+				T res((*mapArray[index])[i].getValue());
 				*mapArray[index]->removeAt(i);
 				return res;    //move constructor needed
 			}
@@ -108,7 +113,7 @@ namespace sgdc{
 	template<typename T, template<typename> class NodeType>
 	DynamicArray<string> Map<T,NodeType>::keys() const{
 		DynamicArray<string> res;
-		for(int i = 0; i < 50; i++){
+		for(int i = 0; i < 100; i++){
 			for(int k = 0; k < mapArray[i]->getLength(); k++){
 				res.push((*mapArray[i])[k].getKey());
 			}
@@ -119,7 +124,7 @@ namespace sgdc{
 	template<typename T, template<typename> class NodeType>
 	DynamicArray<T> Map<T,NodeType>::values() const{
 		DynamicArray<T> res;
-		for(int i = 0; i < 50; i++){
+		for(int i = 0; i < 100; i++){
 			for(int k = 0; k < mapArray[i]->getLength(); k++){
 				res.push((*mapArray[i])[k].getValue());
 			}

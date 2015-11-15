@@ -15,6 +15,10 @@ int main(){
 	Map<string, ThePair> myMap(&alloc);
 	string greetings = "world";
 	myMap.push("hello", greetings);
+	for(int i = 0; i < 10000; i++){
+		myMap.push(std::to_string(i), "hello");
+		cout<<i<<"  "<<myMap.has(std::to_string(i))<<endl;
+	}
 
 
 
