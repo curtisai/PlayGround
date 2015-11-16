@@ -48,7 +48,7 @@ namespace sgdc{
 
 
 	template<typename T>
-	DynamicArray<T>::DynamicArray(DynamicArray<T>&& other){
+	DynamicArray<T>::DynamicArray(DynamicArray<T>&& other):elementAllocator(other.elementAllocator){
 		end = other.end;
 		max = other.max;
 		expand = other.expand;

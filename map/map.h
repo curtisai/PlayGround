@@ -46,8 +46,8 @@ namespace sgdc{
 
 	  	bool has(const std::string& key);
 	  	T remove(const std::string& key);
-	  	DynamicArray<std::string> keys() const;  //Retrieves all keys(immutable)
-	  	DynamicArray<T> values() const;          //Retrieves all values(immutable)
+	  	DynamicArray<std::string> keys(sgdm::CountingAllocator<std::string>& alloc) const;  //Retrieves all keys(immutable)
+	  	DynamicArray<T> values(sgdm::CountingAllocator<T>& alloc) const;          //Retrieves all values(immutable)
         T operator[](const std::string& key) const;
         T& operator[](const std::string& key);
 
@@ -134,8 +134,10 @@ namespace sgdc{
 	}
 
 	template<typename T, template<typename> class NodeType>
-	DynamicArray<string> Map<T,NodeType>::keys() const{
-		DynamicArray<string> res(mapAlloc);
+	DynamicArray<string> Map<T,NodeType>::keys(sgdm::CountingAllocator<std::string>& alloc) const{
+        //sgdm::CountingAllocator<string> keyAlloc;
+        
+		DynamicArray<string> res(alloc);
 		for(int i = 0; i < 100; i++){
 			for(int k = 0; k < mapArray[i]->getLength(); k++){
 				res.push((*mapArray[i])[k].getKey());
@@ -145,8 +147,9 @@ namespace sgdc{
 	}
 
 	template<typename T, template<typename> class NodeType>
-	DynamicArray<T> Map<T,NodeType>::values() const{
-		DynamicArray<T> res(mapAlloc);
+	DynamicArray<T> Map<T,NodeType>::values(sgdm::CountingAllocator<T>& alloc) const{
+        //sgdm::CountingAllocator<T> valueAlloc;
+		DynamicArray<T> res(alloc);
 		for(int i = 0; i < 100; i++){
 			for(int k = 0; k < mapArray[i]->getLength(); k++){
 				res.push((*mapArray[i])[k].getValue());

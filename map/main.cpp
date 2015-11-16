@@ -13,6 +13,8 @@ int main(){
     using std::cin;
 
 	CountingAllocator<ThePair<string>> alloc;
+    CountingAllocator<std::string> keyAlloc;
+    CountingAllocator<std::string> valueAlloc;
 	Map<string, ThePair>* myMap;
 	/*
     for (int k = 0; k < 10; k++) {
@@ -33,8 +35,14 @@ int main(){
         string k = myMap->remove("10");
         cout<<k<<"   "<<myMap->has("10")<<endl;
     cout<<"input"<<endl;
+
+    DynamicArray<string> myValues = myMap->values(valueAlloc);
+    DynamicArray<string> myKeys = myMap->keys(keyAlloc);
+    
     string x;
     cin>>x;
+
+    delete myMap;
 	
 
 
