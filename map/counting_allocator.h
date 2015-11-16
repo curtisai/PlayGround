@@ -28,8 +28,8 @@ namespace sgdm{
 	  	static int getTotoalReleaseCount();
 	  	static int getTotalOutstandingCount();
 
-	  	virtual T* get(int count);
-	  	virtual void release(T* address, int count = 0);
+	  	virtual T* get(int count, T* oldAddress = nullptr);
+	  	virtual void release(T* address);
 
 	};
 
@@ -86,18 +86,18 @@ namespace sgdm{
 	}
 
 	template<typename T>
-	T* CountingAllocator<T>::get(int count){
-		return DefaultAllocator<T>::get(count);
+	T* CountingAllocator<T>::get(int count, T* oldAddress){
+		return DefaultAllocator<T>::get(count, oldAddress);
 	}
+	
 
 	template<typename T>
-	void CountingAllocator<T>::release(T* address, int count){
+	void CountingAllocator<T>::release(T* address){
 		if(address != NULL){
-			for(int i=0;i<count;i++){
-			address[i].~T();
-			}
+			delete (void*)address;
 		}
 	}
+	
 
 }
 

@@ -1,7 +1,7 @@
 #ifndef DYNAMIC_ARRAY_H_
 #define DYNAMIC_ARRAY_H_
 
-#include <cstddef>
+
 #include <new>
 #include "counting_allocator.h"
 namespace sgdc{
@@ -20,9 +20,13 @@ namespace sgdc{
 	  	inline void shiftRight(int index, int count);
 	  	inline void shiftLeft(int index, int count);
 	  	DynamicArray(const DynamicArray<T>& other);
+
+
+
+
 	  public:
 	  	DynamicArray(sgdm::IAllocator<T> &alloc, int initSize = 100);
-	  	explicit DynamicArray(DynamicArray<T>&& other);
+        DynamicArray(DynamicArray<T>&& other);
 	  	~DynamicArray();
 
 
@@ -56,7 +60,7 @@ namespace sgdc{
 	template<typename T>
 	void DynamicArray<T>::enlarge(){
 		T *temp =  contents;
-		contents = elementAllocator.get(expand + max);
+		contents = elementAllocator.get(expand + max, temp);
 		for(int i = 0; i <= max; i++){
 		    //elementAllocator.construct(contents + i, T(temp[i]))	
 		    new (contents + i) T(temp[i]);//contents[i] = temp[i];
@@ -64,6 +68,7 @@ namespace sgdc{
 		}
 		max = expand + max;
 		elementAllocator.clean();
+		temp = nullptr;
 
 	}
 
@@ -80,15 +85,6 @@ namespace sgdc{
 			new (contents + i) T(contents[i - count]);
 			contents[i - count].~T();
 		}
-
-		/*for(int k = end + count - 1; k >= index + count; k--){
-			
-			contents[k] = contents[k - count];
-			contents[k - count].~T();
-		}*/
-		/*for(int m = index; m < index + count - 1; m++){
-			contents[m].~T();
-		}*/
 		end += count;
 
 	}
@@ -124,13 +120,11 @@ namespace sgdc{
 
 	template<typename T>
 	DynamicArray<T>::~DynamicArray(){
-		if(end != 0){
-			for(int i = 0; i < end; i++){
-				contents[i].~T();
-			}
-		}
-		elementAllocator.~IAllocator();
-		contents = nullptr;
+        elementAllocator.destruct(this->contents, end);
+		
+		//elementAllocator.~IAllocator();
+		elementAllocator.release(this->contents);
+        contents = nullptr;
 	}
 
 	template<typename T>

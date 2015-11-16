@@ -10,15 +10,33 @@ int main(){
 	using std::string;
 	using std::cout;
 	using std::endl;
+    using std::cin;
 
 	CountingAllocator<ThePair<string>> alloc;
-	Map<string, ThePair> myMap(&alloc);
-	string greetings = "world";
-	myMap.push("hello", greetings);
-	for(int i = 0; i < 10000; i++){
-		myMap.push(std::to_string(i), "hello");
-		cout<<i<<"  "<<myMap.has(std::to_string(i))<<endl;
-	}
+	Map<string, ThePair>* myMap;
+	/*
+    for (int k = 0; k < 10; k++) {
+        myMap = new Map<string, ThePair>(&alloc);
+        for (int i = 0; i < 100000; i++) {
+            myMap->push(std::to_string(i), "hello");
+            if(!myMap->has(std::to_string(i)))cout<<"fail to find"<<endl;
+        }
+        
+        delete myMap;
+    }
+    */
+    myMap = new Map<string, ThePair>(&alloc);
+        for (int i = 0; i < 1000; i++) {
+            myMap->push(std::to_string(i), "hello");
+            if(!myMap->has(std::to_string(i)))cout<<"fail to find"<<endl;
+        }
+        string k = myMap->remove("10");
+        cout<<k<<"   "<<myMap->has("10")<<endl;
+    cout<<"input"<<endl;
+    string x;
+    cin>>x;
+	
+
 
 
 

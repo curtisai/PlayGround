@@ -13,26 +13,24 @@ namespace sgdm{
 	  	~DefaultAllocator();
 
 
-	  	virtual T* get(int count);
-	  	virtual void release(T* address, int count);
+	  	virtual T* get(int count, T* oldAddress = nullptr);
+	  	virtual void release(T* address);
 	};
 
 
-
-
-	template<typename T>
-	T* DefaultAllocator<T>::get(int count){
-		return IAllocator<T>::get(count);
-	}
+    
 
 	template<typename T>
-	void DefaultAllocator<T>::release(T* address, int count){
-		if(address != NULL){
-			for(int i=0;i<count;i++){
-			address[i].~T();
-			}
-		}
+	T* DefaultAllocator<T>::get(int count, T* oldAddress){
+		return IAllocator<T>::get(count, oldAddress);
 	}
+
+	
+	template<typename T>
+	void DefaultAllocator<T>::release(T* address){
+		IAllocator<T>::release(address);
+	}
+	
 
 	template<typename T>
 	DefaultAllocator<T>::DefaultAllocator(IAllocator<T>& alloc):IAllocator<T>(alloc){}

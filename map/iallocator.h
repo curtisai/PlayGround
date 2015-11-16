@@ -17,14 +17,14 @@ namespace sgdm{
 	  	IAllocator(IAllocator<T>& alloc);
 	  	~IAllocator();
 
-	  	virtual T* get(int count);
-	  	virtual void release(T* address, int count);  
+	  	virtual T* get(int count, T* oldAddress = nullptr);
+	  	//virtual void release(T* address, int count);  
 	  	virtual void release(T* address);  //assignment three
 	  	virtual void clean();
 
 	  	virtual void construct(T* address, const T& element);  //assignment three
 	  	virtual void construct(T* address, T&& element);  //assignment three
-	  	virtual void destruct(T* address);
+	  	virtual void destruct(T* address, int count);
 
 
 
@@ -60,23 +60,24 @@ namespace sgdm{
 
 	template<typename T>
 	IAllocator<T>::~IAllocator(){
+        /*
 		if(allocatedAddress != NULL){
 			delete allocatedAddress;
 			allocatedAddress = NULL;
 		}
+         */
 	}
 
 
-//******************************************
-	//here is the problem
+
 	template<typename T>
-	T* IAllocator<T>::get(int count){
-		swap = allocatedAddress;
+	T* IAllocator<T>::get(int count, T* oldAddress){
+		swap = oldAddress;
 		allocatedAddress = ::operator new(sizeof(T) * count);
 		return (T*) allocatedAddress;
 	}
 
-	
+	/*
 	template<typename T>
 	void IAllocator<T>::release(T* address, int count){
 		if(address != NULL){
@@ -85,12 +86,13 @@ namespace sgdm{
 			}
 		}
 	}
+	*/
 
 	template<typename T>   //assignment three
 	void IAllocator<T>::release(T* address){
-		if(allocatedAddress != NULL){
-			delete allocatedAddress;
-			allocatedAddress = NULL;
+		if(address != NULL){
+			delete (void*)address;
+			address = NULL;
 		}
 	}
 
@@ -105,8 +107,14 @@ namespace sgdm{
 	}
 
 	template<typename T>
-	void IAllocator<T>::destruct(T* address){
-		address->~T();
+	void IAllocator<T>::destruct(T* address, int count){
+		if(address!=nullptr){
+			for(int i = 0; i < count; i++){
+				address[i].~T();
+			}
+		}
+
+		//address->~T();
 	}
 	
 
