@@ -10,6 +10,7 @@
 #include <cstddef>
 #include <iostream>
 #include "stack_guard.h"
+
 //under score is allowed in name
 
 
@@ -32,12 +33,6 @@ class JsonPair : public JsonValue{
   public:
   	JsonPair(sgdm::StackGuard<JsonEntity>&& LHS, sgdm::StackGuard<JsonEntity>&& RHS) : lhs(std::move(LHS)) , rhs(std::move(RHS)){}
   	virtual ~JsonPair(){
-  		/*
-  		if(lhs != nullptr)
-  			delete lhs;
-  		if(rhs != nullptr)
-  			delete rhs;
-  			*/
   	}
     
 };
@@ -48,6 +43,7 @@ class JsonPair : public JsonValue{
 
 class JsonObject : public JsonValue{
 	std::vector<sgdm::StackGuard<JsonEntity>> v;// or JsonPair
+
   public:
   	JsonObject() :v(){}
 	virtual ~JsonObject(){}
@@ -97,12 +93,6 @@ class JsonArray : public JsonValue{
 		arrayElements.push_back(std::move(element));
 	}
   	virtual ~JsonArray(){
-  		/*
-  		for(unsigned int i = 0; i < arrayElements.size(); i++){
-  			if(arrayElements[i] != nullptr)
-  				delete arrayElements[i];
-  		}
-  		*/
   	}
 };
 
@@ -111,7 +101,6 @@ class JsonArray : public JsonValue{
 
 class JsonParser{
   private:
-  	//StackGuard<JsonEntity> parseResult;
 
   	//tokens
 	enum elementToken{
@@ -220,7 +209,6 @@ class JsonParser{
 
 	//Parsers begins
 	sgdm::StackGuard<JsonEntity> ParseInteger(){
-		//JsonInteger* res = new JsonInteger(inputIntger);
 		sgdm::StackGuard<JsonEntity> res(new JsonInteger(inputIntger));
 		getNextTok();
 		return std::move(res);
@@ -241,7 +229,6 @@ class JsonParser{
 	sgdm::StackGuard<JsonEntity> ParseObject(){
 		sgdm::StackGuard<JsonEntity> resObject(new JsonObject());
 		if(currentTok != '{'){
-			//delete resObject;
 			return Error("Expecting { at entity beginning");
 		}
 		else{
@@ -259,12 +246,9 @@ class JsonParser{
 
 
 	sgdm::StackGuard<JsonEntity> ParsePair(){
-		//JsonName* pairName;
-		//JsonValue* pairValue;
 		sgdm::StackGuard<JsonEntity> pairName(new JsonName(idString));
 		getNextTok();
 		if(currentTok != ':'){
-			//delete pairName;
 			return Error("Expecting :");
 		}
 		else{
