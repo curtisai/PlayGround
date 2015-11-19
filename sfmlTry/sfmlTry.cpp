@@ -1,5 +1,5 @@
 #include <SFML/Graphics.hpp>
-
+#include <iostream>
 int main()
 {
     sf::RenderWindow window(sf::VideoMode(200, 200), "SFML works!");
@@ -13,6 +13,16 @@ int main()
         {
             if (event.type == sf::Event::Closed)
                 window.close();
+            switch(event.type){
+            	case sf::Event::KeyPressed:
+            	std::cout<<"pressed"<<std::endl;
+            	break;
+            	case sf::Event::KeyReleased:
+            	std::cout<<"released"<<std::endl;
+            	break;
+            	default:
+            	break;
+            }
         }
 
         window.clear();
