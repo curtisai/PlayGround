@@ -13,7 +13,7 @@ namespace sgdm{
 	class StackGuard{
 	  private:
 	  	T* thePtr;
-	  	StackGuard(StackGuard<T>& newPtr) noexcept;          //Should use move constructor instead.
+	  	StackGuard(StackGuard<T>& newPtr)=delete;          //Should use move constructor instead.
 	  public:
 	  	StackGuard(T* guarded = nullptr) noexcept;						//to disable throw()
 	  	StackGuard(StackGuard<T>&& guarded) noexcept;

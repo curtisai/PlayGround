@@ -8,6 +8,7 @@
 #include <iostream>
 namespace sgdc{
 	using std::string;
+	/*
 	template<typename T>
 	class ThePair{
 	  private:
@@ -22,10 +23,11 @@ namespace sgdc{
 	  		const std::string& getKey(){
 	  			return pairKey;
 	  		}
-            T& getValue() const{
+            T& getValue(){
 	  			return pairElement;
 	  		}
 	};
+	*/
 
 
 	template<typename T, template<typename> class NodeType>
@@ -69,9 +71,9 @@ namespace sgdc{
 		unsigned int index = hashFunction(key);
 		for(int i = 0; i < mapArray[index]->getLength(); i++){
 			if(key == (*mapArray[index])[i].getKey()){
-				T res((*mapArray[index])[i].getValue());
+				T res(std::move((*mapArray[index])[i].getValue()));
 				mapArray[index]->removeAt(i);
-				return res;
+				return std::move(res);
 			}
 		}
 	}
@@ -143,7 +145,9 @@ namespace sgdc{
 		}
 		return T();
 	}
+
 	*/
+	
 
 	template<typename T, template<typename> class NodeType>
 	DynamicArray<string> Map<T,NodeType>::keys(sgdm::CountingAllocator<std::string>& alloc) const{

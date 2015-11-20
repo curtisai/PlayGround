@@ -5,9 +5,5 @@ int main(){
 	//JsonParser myParser("{'required': [ 'storage' , 'sand' , {'theWorld' : 'onceAgain' } ]}");
     sgdm::IAllocator<sgdm::StackGuard<JsonValue>> alloc;
 	sgdm::StackGuard<JsonValue> res(myParser.Parse(&alloc));
-
-
-
-
 	return 0;
 }
