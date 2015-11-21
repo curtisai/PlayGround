@@ -49,7 +49,8 @@ namespace sgdc{
 	  	
 
 	  	bool has(const std::string& key);
-	  	T remove(const std::string& key);
+	  	T removeCopy(const std::string& key);
+	  	T&& removeMove(const std::string& key);
 	  	DynamicArray<std::string> keys(sgdm::CountingAllocator<std::string>& alloc) const;  //Retrieves all keys(immutable)
 	  	DynamicArray<T> values(sgdm::CountingAllocator<T>& alloc) const;          //Retrieves all values(immutable)
         T operator[](const std::string& key) const;
@@ -67,17 +68,28 @@ namespace sgdc{
 
 
 	template<typename T, template<typename> class NodeType>
-	T Map<T, NodeType>::remove(const std::string& key){
+	T Map<T, NodeType>::removeCopy(const std::string& key){
+		unsigned int index = hashFunction(key);
+		for(int i = 0; i < mapArray[index]->getLength(); i++){
+			if(key == (*mapArray[index])[i].getKey()){
+				T res((*mapArray[index])[i].getValue());
+				mapArray[index]->removeAtCopy(i);
+				return res;
+			}
+		}
+	}
+	template<typename T, template<typename> class NodeType>
+	T&& Map<T, NodeType>::removeMove(const std::string& key){
 		unsigned int index = hashFunction(key);
 		for(int i = 0; i < mapArray[index]->getLength(); i++){
 			if(key == (*mapArray[index])[i].getKey()){
 				T res(std::move((*mapArray[index])[i].getValue()));
-				mapArray[index]->removeAt(i);
+				mapArray[index]->removeAtMove(i);
 				return std::move(res);
 			}
 		}
 	}
-	
+
 	template<typename T, template<typename> class NodeType>
 	unsigned int Map<T, NodeType>::hashFunction(const string& key){
 		unsigned int res = 0;

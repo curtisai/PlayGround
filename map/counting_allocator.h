@@ -93,9 +93,7 @@ namespace sgdm{
 
 	template<typename T>
 	void CountingAllocator<T>::release(T* address){
-		if(address != NULL){
-			delete (void*)address;
-		}
+        DefaultAllocator<T>::release(address);
 	}
 	
 

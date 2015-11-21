@@ -13,7 +13,7 @@ namespace sgdm{
 	class StackGuard{
 	  private:
 	  	T* thePtr;
-	  	StackGuard(StackGuard<T>& newPtr) noexcept;          //Should use move constructor instead.
+	  	StackGuard(StackGuard<T>& newPtr)=delete;          //Should use move constructor instead.
 	  public:
 	  	StackGuard(T* guarded = nullptr) noexcept;						//to disable throw()
 	  	StackGuard(StackGuard<T>&& guarded) noexcept;
@@ -27,7 +27,7 @@ namespace sgdm{
 	  	StackGuard& operator=(StackGuard&& rhs) noexcept;
 	  	//StackGuard& operator=(T* rhs) throw();            //This function for some unkown reasons, just doesn't work.
 	  	                                                    //I intentionally leave it commented for solving it later
-	  	const T& operator*();
+        T& operator*();  //removed return const
 
 	  	const bool operator==(const bool rhs);
 	  	const bool operator!();
@@ -81,7 +81,7 @@ namespace sgdm{
 	}
 
 	template<typename T>
-	const T& StackGuard<T>::operator*(){
+    T& StackGuard<T>::operator*(){
 		return *thePtr;
 	}
 

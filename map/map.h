@@ -8,6 +8,7 @@
 #include <iostream>
 namespace sgdc{
 	using std::string;
+	
 	template<typename T>
 	class ThePair{
 	  private:
@@ -16,16 +17,18 @@ namespace sgdc{
 	  		int insertCount;
 	  public:
 	  		ThePair(const std::string& key, const T& element):pairKey(key), pairElement(element){}
+	  		ThePair(const std::string& key, T&& element):pairKey(key),pairElement(std::move(element)){}
 	  		//ThePair():pairKey(),pairElement(){} //this might be not necessary
 	  		~ThePair(){
 	  		}
 	  		const std::string& getKey(){
 	  			return pairKey;
 	  		}
-	  		const T& getValue() const{
+            T& getValue(){
 	  			return pairElement;
 	  		}
 	};
+	
 
 
 	template<typename T, template<typename> class NodeType>
@@ -39,13 +42,16 @@ namespace sgdc{
 	  	~Map();
 
 	  	void push(const string& key, const T& value);
+        void push(const string& key, T&& value);
 	  	void push(const NodeType<T>& newPair);
+        void push(NodeType<T>&& newPair);
 	  	//T output() const;
 
 	  	
 
 	  	bool has(const std::string& key);
-	  	T remove(const std::string& key);
+	  	T removeCopy(const std::string& key);
+	  	T&& removeMove(const std::string& key);
 	  	DynamicArray<std::string> keys(sgdm::CountingAllocator<std::string>& alloc) const;  //Retrieves all keys(immutable)
 	  	DynamicArray<T> values(sgdm::CountingAllocator<T>& alloc) const;          //Retrieves all values(immutable)
         T operator[](const std::string& key) const;
@@ -61,19 +67,30 @@ namespace sgdc{
         //int insertCount; needed no more
 	};
 
-/*
+
 	template<typename T, template<typename> class NodeType>
-	T Map<T, NodeType>::remove(const std::string& key){
+	T Map<T, NodeType>::removeCopy(const std::string& key){
 		unsigned int index = hashFunction(key);
 		for(int i = 0; i < mapArray[index]->getLength(); i++){
 			if(key == (*mapArray[index])[i].getKey()){
 				T res((*mapArray[index])[i].getValue());
-				mapArray[index]->removeAt(i);
+				mapArray[index]->removeAtCopy(i);
 				return res;
 			}
 		}
 	}
-	*/
+	template<typename T, template<typename> class NodeType>
+	T&& Map<T, NodeType>::removeMove(const std::string& key){
+		unsigned int index = hashFunction(key);
+		for(int i = 0; i < mapArray[index]->getLength(); i++){
+			if(key == (*mapArray[index])[i].getKey()){
+				T res(std::move((*mapArray[index])[i].getValue()));
+				mapArray[index]->removeAtMove(i);
+				return std::move(res);
+			}
+		}
+	}
+
 	template<typename T, template<typename> class NodeType>
 	unsigned int Map<T, NodeType>::hashFunction(const string& key){
 		unsigned int res = 0;
@@ -105,11 +122,20 @@ namespace sgdc{
 		mapArray[index]->push(NodeType<T>(key, value));
 	}
 
+
+	
 	template<typename T, template<typename> class NodeType>
 	void Map<T, NodeType>::push(const NodeType<T>& newPair){
-		unsigned int index = hashFunction(newPair.getKey());
+		unsigned int index = hashFunction(newPair->getKey());
 		mapArray[index]->push(newPair);
 	}
+	
+    
+    template<typename T, template<typename> class NodeType>
+    void Map<T, NodeType>::push(NodeType<T>&& newPair){
+        unsigned int index = hashFunction(newPair->asString());
+        mapArray[index]->push(std::move(newPair));
+    }
 
 	template<typename T, template<typename> class NodeType>
 	bool Map<T, NodeType>::has(const string& key){
@@ -119,7 +145,7 @@ namespace sgdc{
 		}
 		return false;
 	}
-
+/*
 	template<typename T, template<typename> class NodeType>
 	T Map<T, NodeType>::remove(const std::string& key){
 		unsigned int index = hashFunction(key);
@@ -132,6 +158,9 @@ namespace sgdc{
 		}
 		return T();
 	}
+
+	*/
+	
 
 	template<typename T, template<typename> class NodeType>
 	DynamicArray<string> Map<T,NodeType>::keys(sgdm::CountingAllocator<std::string>& alloc) const{
@@ -157,6 +186,26 @@ namespace sgdc{
 		}
 		return std::move(res);
 	}
+    
+    template<typename T, template<typename> class NodeType>
+    T Map<T, NodeType>::operator[](const std::string& key) const{
+        unsigned int index = hashFunction(key);
+        for(int i =0; i < mapArray[index]->getLength();i++){
+            if(key == (*mapArray[index])[i]->getKey())
+                return (*mapArray[index])[i]->getValue();
+        }
+    }
+    
+    template<typename T, template<typename> class NodeType>
+    T& Map<T, NodeType>::operator[](const std::string& key){
+        unsigned int index = hashFunction(key);
+        for(int i =0; i < mapArray[index]->getLength();i++){
+            if(key == (*mapArray[index])[i]->asString())
+                return ((*mapArray[index])[i]->getValue());
+        }
+            std::abort();
+    }
+    
 
 
 }

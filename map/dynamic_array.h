@@ -16,9 +16,12 @@ namespace sgdc{
 	  	T *contents;
 
 
-	  	inline void enlarge();
-	  	inline void shiftRight(int index, int count);
-	  	inline void shiftLeft(int index, int count);
+	  	inline void enlargeCopy();
+	  	inline void enlargeMove();
+	  	inline void shiftRightCopy(int index, int count);
+	  	inline void shiftRightMove(int index, int count);
+	  	inline void shiftLeftCopy(int index, int count);
+	  	inline void shiftLeftMove(int index, int count);
 	  	DynamicArray(const DynamicArray<T>& other);
 
 
@@ -31,18 +34,25 @@ namespace sgdc{
 
 
 	  	void push(const T& element);
+        void push(T&& element);
 	  	void pushFront(const T& element);
-
+	  	void pushFront(T&& element);
+        
 	  	const int getMax();
 
 	  	T pop();
-	  	T popFront();
+	  	T&& popMove();
+	  	T popFrontCopy();
+	  	T&& popFrontMove();
+
 	  	const unsigned int getLength();
 	  	const T at(unsigned int index);
 	  	T& operator[](unsigned int index);
 	  	T operator[](unsigned int index) const;
-	  	T removeAt(unsigned int index);
+	  	T removeAtCopy(unsigned int index);
+	  	T&& removeAtMove(unsigned int index);
 	  	void insertAt(unsigned int index, const T& element);
+	  	void insertAt(unsigned int index, T&& element);
 	  	
 	};
 
@@ -58,12 +68,26 @@ namespace sgdc{
 	}
 
 	template<typename T>
-	void DynamicArray<T>::enlarge(){
+	void DynamicArray<T>::enlargeCopy(){
+		T *temp =  contents;
+		contents = elementAllocator.get(expand + max, temp);
+		for(int i = 0; i <= max; i++){	
+            new (contents + i) T(temp[i]);//contents[i] = temp[i];
+			temp[i].~T();
+		}
+		max = expand + max;
+		elementAllocator.clean();
+		temp = nullptr;
+
+	}
+
+	template<typename T>
+	void DynamicArray<T>::enlargeMove(){
 		T *temp =  contents;
 		contents = elementAllocator.get(expand + max, temp);
 		for(int i = 0; i <= max; i++){
 		    //elementAllocator.construct(contents + i, T(temp[i]))	
-		    new (contents + i) T(temp[i]);//contents[i] = temp[i];
+            new (contents + i) T(std::move(temp[i]));//contents[i] = temp[i];
 			temp[i].~T();
 		}
 		max = expand + max;
@@ -80,21 +104,44 @@ namespace sgdc{
 
 	
 	template<typename T>
-	void DynamicArray<T>::shiftRight(int index, int count){
+	void DynamicArray<T>::shiftRightCopy(int index, int count){
 		for(int i = end + count -1; i >= index + count; i--){
 			new (contents + i) T(contents[i - count]);
 			contents[i - count].~T();
 		}
 		end += count;
-
 	}
 
 	template<typename T>
-	void DynamicArray<T>::shiftLeft(int index, int count){
+	void DynamicArray<T>::shiftRightMove(int index, int count){
+		for(int i = end + count -1; i >= index + count; i--){
+			new (contents + i) T(std::move(contents[i - count]));
+			contents[i - count].~T();
+		}
+		end += count;
+	}
+
+	template<typename T>
+	void DynamicArray<T>::shiftLeftCopy(int index, int count){
 		if (index - count >= 0){
-			//contents[index-count].~T();
-			for (int i = index - count; i < end - count ; i++){
+			for (int i = index - count; i < end - count; i++){
 				new (contents + i) T(contents[i + count]);
+				contents[i + count].~T();
+			}
+			if(end - count < index){
+				for(int i = end - count; i < index; i++){
+					contents[i].~T();
+				}
+			}
+				end -= count;
+		}
+	}
+
+	template<typename T>
+	void DynamicArray<T>::shiftLeftMove(int index, int count){
+		if (index - count >= 0){
+			for (int i = index - count; i < end - count; i++){
+				new (contents + i) T(std::move(contents[i + count]));
 				contents[i + count].~T();
 			}
 			if(end - count < index){
@@ -121,8 +168,6 @@ namespace sgdc{
 	template<typename T>
 	DynamicArray<T>::~DynamicArray(){
         elementAllocator.destruct(this->contents, end);
-		
-		//elementAllocator.~IAllocator();
 		elementAllocator.release(this->contents);
         contents = nullptr;
 	}
@@ -130,27 +175,54 @@ namespace sgdc{
 	template<typename T>
 	void DynamicArray<T>::push(const T& element){
 		if(end <= max){
-			elementAllocator.construct(contents + end, T(element)); //new (contents + end) T(element);
+            elementAllocator.construct(contents + end, element);
 			end++;
 		}
 		else{
-			enlarge();
+			enlargeCopy();
 			push(element);
 		}
 	}
+    
+    template<typename T>
+    void DynamicArray<T>::push(T&& element){
+        if(end <= max){
+            elementAllocator.construct(contents + end, std::move(element)); //new (contents + end) T(element);
+            end++;
+        }
+        else{
+            enlargeMove();
+            push(std::move(element));
+        }
+    }
 
 	template<typename T>
 	void DynamicArray<T>::pushFront(const T& element){
 		if(end == 0)push(element);
 		else
 			if(end <= max){
-				shiftRight(0,1);
+				shiftRightCopy(0,1);
 			//end++;  shifRight takes care of this
 				elementAllocator.construct(contents, T(element)); //new (contents) T(element);
 			}
 			else{
-				enlarge();
+				enlargeCopy();
 				pushFront(element);
+			}
+	}
+
+	template<typename T>
+	void DynamicArray<T>::pushFront(T&& element){
+		if(end == 0)push(std::move(element));
+		else
+			if(end <= max){
+				shiftRightMove(0,1);
+			//end++;  shifRight takes care of this
+				elementAllocator.construct(contents, T(std::move(element))); //new (contents) T(element);
+			}
+			else{
+				enlargeMove();
+				pushFront(std::move(element));
 			}
 	}
 
@@ -163,13 +235,31 @@ namespace sgdc{
 	}
 
 	template<typename T>
-	T DynamicArray<T>::popFront(){
+	T&& DynamicArray<T>::popMove(){
+		T temp(std::move(contents[end-1]));
+		elementAllocator.destruct(contents + end -1); //contents[end-1].~T();
+		end--;
+		return std::move(temp);
+	}
+
+	template<typename T>
+	T DynamicArray<T>::popFrontCopy(){
 		T temp = contents[0];
 		//contents[0].~T(); //this should be done by the shift functions
 		elementAllocator.destruct(contents);
-		shiftLeft(1,1);
+		shiftLeftCopy(1,1);
 		//end--;   shiftLeft takes care of this
 		return temp;
+	}
+
+	template<typename T>
+	T&& DynamicArray<T>::popFrontMove(){
+		T temp = contents[0];
+		//contents[0].~T(); //this should be done by the shift functions
+		elementAllocator.destruct(contents);
+		shiftLeftMove(1,1);
+		//end--;   shiftLeft takes care of this
+		return std::move(temp);
 	}
 
 
@@ -199,18 +289,33 @@ namespace sgdc{
 	}
 
 	template<typename T>
-	T DynamicArray<T>::removeAt(unsigned int index){
+	T DynamicArray<T>::removeAtCopy(unsigned int index){
 		if(index >= end){
 			throw "DynamicArray::removeAt()  Out of boundary";
 		}
 		else{
-			T temp = contents[index];
+			T temp(contents[index]);
 			//contents[index].~T();
-			shiftLeft(index + 1, 1);
+			shiftLeftCopy(index + 1, 1);
 			//end--;
 			return temp;
 		}
 	}
+
+	template<typename T>
+	T&& DynamicArray<T>::removeAtMove(unsigned int index){
+		if(index >= end){
+			throw "DynamicArray::removeAt()  Out of boundary";
+		}
+		else{
+			T temp(std::move(contents[index]));
+			//contents[index].~T();
+			shiftLeftMove(index + 1, 1);
+			//end--;
+			return std::move(temp);
+		}
+	}
+
 
 
 	template<typename T>
@@ -220,13 +325,31 @@ namespace sgdc{
 		}
 		else{
 			if(end <= max){
-				shiftRight(index, 1);
+				shiftRightCopy(index, 1);
 				//end++;
 				new (contents + index) T(element);
 			}
 			else{
-				enlarge();
+				enlargeCopy();
 				insertAt(index, element);
+			}
+		}
+	}
+
+	template<typename T>
+	void DynamicArray<T>::insertAt(unsigned int index, T&& element){
+		if(index > end){
+			throw "DynamicArray::insertAt()  Out of boundary";
+		}
+		else{
+			if(end <= max){
+				shiftRightMove(index, 1);
+				//end++;
+				new (contents + index) T(std::move(element));
+			}
+			else{
+				enlargeMove();
+				insertAt(index, std::move(element));
 			}
 		}
 	}
