@@ -18,8 +18,10 @@ namespace sgdc{
 	  public:
 	  		ThePair(const std::string& key, const T& element):pairKey(key), pairElement(element){}
 	  		ThePair(const std::string& key, T&& element):pairKey(key),pairElement(std::move(element)){}
+	  		ThePair(const ThePair& pair):pairKey(pair.pairKey),pairElement(pair.pairElement){}
 	  		//ThePair():pairKey(),pairElement(){} //this might be not necessary
 	  		~ThePair(){
+	  			//pairElement.~T();
 	  		}
 	  		const std::string& getKey(){
 	  			return pairKey;
@@ -73,8 +75,9 @@ namespace sgdc{
 		unsigned int index = hashFunction(key);
 		for(int i = 0; i < mapArray[index]->getLength(); i++){
 			if(key == (*mapArray[index])[i].getKey()){
-				T res((*mapArray[index])[i].getValue());
-				mapArray[index]->removeAtCopy(i);
+				T res(mapArray[index]->removeAtCopy(i).getValue());//(*mapArray[index])[i].getValue());
+				//mapArray[index]->removeAtCopy(i);
+                std::cout<<"copy"<<std::endl;
 				return res;
 			}
 		}
@@ -84,8 +87,9 @@ namespace sgdc{
 		unsigned int index = hashFunction(key);
 		for(int i = 0; i < mapArray[index]->getLength(); i++){
 			if(key == (*mapArray[index])[i].getKey()){
-				T res(std::move((*mapArray[index])[i].getValue()));
-				mapArray[index]->removeAtMove(i);
+				T res(std::move(mapArray[index]->removeAtMove(i).getValue()));//(*mapArray[index])[i].getValue()));
+				//mapArray[index]->removeAtMove(i);
+                std::cout<<"move"<<std::endl;
 				return std::move(res);
 			}
 		}
@@ -172,7 +176,7 @@ namespace sgdc{
 				res.push((*mapArray[i])[k].getKey());
 			}
 		}
-		return std::move(res);
+		return res;
 	}
 
 	template<typename T, template<typename> class NodeType>
@@ -184,7 +188,7 @@ namespace sgdc{
 				res.push((*mapArray[i])[k].getValue());
 			}
 		}
-		return std::move(res);
+		return res;
 	}
     
     template<typename T, template<typename> class NodeType>

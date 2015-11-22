@@ -13,9 +13,9 @@ int main(){
     using std::cin;
 
 	CountingAllocator<ThePair<string>> alloc;
-    CountingAllocator<std::string> keyAlloc;
-    CountingAllocator<std::string> valueAlloc;
-	Map<string, ThePair>* myMap;
+    CountingAllocator<string> strAlloc;
+	Map<string, sgdc::ThePair>* myMap;
+    string hello = "hello";
 	/*
     for (int k = 0; k < 10; k++) {
         myMap = new Map<string, ThePair>(&alloc);
@@ -27,17 +27,18 @@ int main(){
         delete myMap;
     }
     */
-    myMap = new Map<string, ThePair>(&alloc);
+    myMap = new Map<string, sgdc::ThePair>(&alloc);
         for (int i = 0; i < 1000; i++) {
-            myMap->push(std::to_string(i), "hello");
+
+            myMap->push(std::to_string(i), hello);
             if(!myMap->has(std::to_string(i)))cout<<"fail to find"<<endl;
         }
-        string k = myMap->remove("10");
+        string k = myMap->removeCopy("10");
         cout<<k<<"   "<<myMap->has("10")<<endl;
     cout<<"input"<<endl;
 
-    DynamicArray<string> myValues = myMap->values(valueAlloc);
-    DynamicArray<string> myKeys = myMap->keys(keyAlloc);
+  // DynamicArray<string> myValues = myMap->values(strAlloc);
+  // DynamicArray<string> myKeys = myMap->keys(strAlloc);
     
     string x;
     cin>>x;
