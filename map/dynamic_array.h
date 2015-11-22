@@ -295,7 +295,7 @@ namespace sgdc{
 		}
 		else{
 			T temp(contents[index]);
-			//contents[index].~T();
+			contents[index].~T();
 			shiftLeftCopy(index + 1, 1);
 			//end--;
 			return temp;
@@ -309,7 +309,7 @@ namespace sgdc{
 		}
 		else{
 			T temp(std::move(contents[index]));
-			//contents[index].~T();
+			contents[index].~T();
 			shiftLeftMove(index + 1, 1);
 			//end--;
 			return std::move(temp);

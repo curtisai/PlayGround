@@ -37,8 +37,8 @@ int main(){
         cout<<k<<"   "<<myMap->has("10")<<endl;
     cout<<"input"<<endl;
 
-  // DynamicArray<string> myValues = myMap->values(strAlloc);
-  // DynamicArray<string> myKeys = myMap->keys(strAlloc);
+   DynamicArray<string> myValues = myMap->values(strAlloc);
+   DynamicArray<string> myKeys = myMap->keys(strAlloc);
     
     string x;
     cin>>x;
