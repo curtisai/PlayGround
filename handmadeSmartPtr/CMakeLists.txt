@@ -2,8 +2,10 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 
 ADD_DEFINITIONs(-std=c++11)
 
-ADD_EXECUTABLE(test stack_guard.h stack_guard.cpp test.cpp)
+#ADD_EXECUTABLE(test stack_guard.h stack_guard.cpp test.cpp)
+ADD_EXECUTABLE(intPtr stack_guard.h stack_guard.cpp main.cpp)
 
-FIND_PACKAGE(GTest REQUIRED)
-INCLUDE_DIRECTORIES(${GTEST_INCLUDE_DIR})
-TARGET_LINK_LIBRARIES(test ${GTEST_LIBRARIES} pthread)
+SET(CMAKE_CXX_FLAGS "-g")
+#FIND_PACKAGE(GTest REQUIRED)
+#INCLUDE_DIRECTORIES(${GTEST_INCLUDE_DIR})
+#TARGET_LINK_LIBRARIES(test ${GTEST_LIBRARIES} pthread)

@@ -1,0 +1,3 @@
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+ADD_EXECUTABLE(complexT complexTemplate.h main.cpp)
+ADD_DEFINITIONS(-std=c++11)
