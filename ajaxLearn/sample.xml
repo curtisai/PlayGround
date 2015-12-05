@@ -1,0 +1,32 @@
+<states>
+      <state>
+            <state_abbreviation>AB</state_abbreviation>
+            <state_name>Alberta</state_name>
+            <country_id>3</country_id>
+      </state>
+      <state>
+            <state_abbreviation>AK</state_abbreviation>
+            <state_name>Alaska</state_name>
+            <country_id>1</country_id>
+      </state>
+      <state>
+            <state_abbreviation>AL</state_abbreviation>
+            <state_name>Alabama</state_name>
+            <country_id>1</country_id>
+      </state>
+      <state>
+            <state_abbreviation>AR</state_abbreviation>
+            <state_name>Arkansas</state_name>
+            <country_id>1</country_id>
+      </state>
+      <state>
+            <state_abbreviation>AS</state_abbreviation>
+            <state_name>American Samoa</state_name>
+            <country_id>1</country_id>
+      </state>
+      <state>
+            <state_abbreviation>AZ</state_abbreviation>
+            <state_name>Arizona</state_name>
+            <country_id>1</country_id>
+      </state>
+</states>

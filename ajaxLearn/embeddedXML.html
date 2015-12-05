@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>XML Data Island Test</title>
+	<link rel="stylesheet" href="toHideXML.css">
+	<style type="text/css">
+	xml{
+		display: none;
+		font-size: 0px
+	}
+	</style>
+	<script language = "javascript">
+
+	function doReplace(){
+		document.getElementById('here').innerHTML =
+		document.getElementById('xmldi').innerHTML;
+		document.getElementById('replace').style.display = 'none';
+	}
+
+	</script>
+</head>
+<body>
+<xml id="xmldi">
+	<input type="text" id="new" name ="new" value="hello, world!"/>
+</xml>
+
+<xml  id = "di">
+	<states>
+        <state>
+             <abbreviation>NJ</abbreviation>
+          <name>New Jersey</name>
+           </state>
+           <state>
+             <abbreviation>NY</abbreviation>
+             <name>New York</name>
+           </state>
+           <state>
+             <abbreviation>PA</abbreviation>
+             <name>Pennsylvania</name>
+           </state>
+         </states>
+</xml>
+<b>XML Data Island Test v.2</b>	
+<br>
+	<div id = "here">
+		<input type="text" id="old" name="old" value="goodbye, cuerl" />
+	</div>
+</br>
+<input type="button" id="replace" name="repalce" value="Replace" onclick="doReplace()"/>
+
+</body>
+</html>
