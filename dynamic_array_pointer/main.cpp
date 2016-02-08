@@ -11,12 +11,12 @@ int main(){
 	StevensDev::sgdm::DefaultAllocator<copyClass*> strPtrAlloc;
 	StevensDev::sgdc::DynamicArray<copyClass*> pointerArray(&strPtrAlloc);
 
-	//for(int i = 0; i < 10; i++){
+	for(int i = 0; i < 100; i++){
 		copyClass* strPtr =  new copyClass();
 		pointerArray.push(strPtr);
 		delete strPtr;
-	//}
-	/******************************************************
+	}
+	//******************************************************
 	copyClass* testPtr = new copyClass();
 	copyClass testObj(*testPtr);
 	delete testPtr;
@@ -27,9 +27,9 @@ int main(){
 	cout << "after placement new \n";
 	temp->show();
 	delete temp;
-	*/
+	
 	for(int i = 0; i < pointerArray.getLength(); i++){
-		cout << pointerArray[i] << "\n";
+		pointerArray[i]->show();
 	}
 	return 0;
 }

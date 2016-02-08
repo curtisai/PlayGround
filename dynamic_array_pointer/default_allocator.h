@@ -10,7 +10,6 @@ Dec. 22 2015
 #include <new>
 #include <utility>
 #include "iallocator.h"
-#include <iostream>
 
 namespace StevensDev{
 	namespace sgdm{    // stands for Stevens Game Development Memory
@@ -86,14 +85,12 @@ namespace StevensDev{
 
 		template<typename T>
 		void DefaultAllocator<T*>::construct(T** pointer, T* element){
-			new (*pointer) T(*element);
-			std::cout << "pointer construct called\n";
+			*pointer = new T(*element);
 		}
 
 		template<typename T>
 		void DefaultAllocator<T*>::destruct(T** pointer){
 			delete (*pointer);
-			std::cout << "pointer destruct called\n";
 		}
 		template<typename T>
 		void DefaultAllocator<T*>::clean(T** pointer){

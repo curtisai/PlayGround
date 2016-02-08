@@ -8,7 +8,6 @@
 #define DYNAMIC_ARRAY_H_
 
 #include "default_allocator.h"
-#include <iostream>
 
 
 namespace StevensDev{
@@ -326,9 +325,9 @@ namespace StevensDev{
 		  	T** contents;                             //the real array
 
             /*Help Functions*/
-		  	void enlarge();                    //enlarge the array when encessary
-		  	void shiftRight(unsigned int index);
-		  	void shiftLeft(unsigned int index);
+		  	void enlarge();                           //enlarge the array when encessary
+		  	void shiftRight(unsigned int index);      //shift array from index place to right by one
+		  	void shiftLeft(unsigned int index);       //shift array from index place to left by one
 
 
 		  public:
@@ -340,15 +339,24 @@ namespace StevensDev{
 		  	~DynamicArray();
 
 		  	/*Member functions*/
-		  	void push(T* newElement);                    //copy new element at the end of array
+		  	void push(T* newElement);                    //copy new element at the end of array, don't take the pointer's
+		  	                                             //ownership
 		  
-		  	void pushFront(T* newElement);               //copy new element at the front of array
+		  	void pushFront(T* newElement);               //copy new element at the front of array, don't take the pointer's
+		  	                                             //ownership
 		  	
 		  	T* pop();                                    //remove the last element of this array, and return it
+		  	                                             //hand over the pointer's ownership
+
 		  	T* popFront();                               //remove the first element of this array, and return it
+		  	                                             //hand over the pointer's ownership
 		  	
 		  	T* removeAt(unsigned int index);             //remove specific element
+		  	                                             //hand over the pointer's ownership
+
 		  	void insertAt(unsigned int index, T* element);
+		  	                                             //insert new element at index place, don't take the
+		  	                                             //pointer's ownership
 		  	
 		  	const unsigned int getLength();              //return current length of the array
 
@@ -360,10 +368,10 @@ namespace StevensDev{
 
 
 		  	
-		    //T const * const operator[](unsigned int index) const;
-		  	T  * operator[](unsigned int index);
+		    T const * const operator[](unsigned int index) const;
+		                                                 //retrieves an element, undefined behaviour if out of bounds
 
-
+		  	T  * operator[](unsigned int index);         //set an element, undefined behaviour if out of bounds
 		};
 
 		template<typename T>
@@ -383,16 +391,14 @@ namespace StevensDev{
 				contents = arrayAlloc->release(contents);
 				contents = temp;
 				temp = nullptr;
-				std::cout << "enlarge() called \n";
 			}
-			
 		}
 
 		template<typename T>
 		void DynamicArray<T*>::shiftRight(unsigned int index){
 			enlarge();
 			for(int i = endIndex; i > index; i--){
-				arrayAlloc->construct(contents + i, contents[i-1]);
+				arrayAlloc->enlargeMove(contents + i, contents[i-1]);
 				arrayAlloc->clean(contents + i-1);
 			}
 		}
@@ -401,7 +407,7 @@ namespace StevensDev{
 		void DynamicArray<T*>::shiftLeft(unsigned int index){
 			arrayAlloc->clean(contents + index-1);
 			for(int i = index-1; i < endIndex -1; i++){
-				arrayAlloc->construct(contents + i, contents[i + 1]);
+				arrayAlloc->enlargeMove(contents + i, contents[i + 1]);
 				arrayAlloc->clean(contents + i + 1);
 			}
 		}
@@ -423,7 +429,7 @@ namespace StevensDev{
 		  expandsRatio(other.expandsRatio){
 		  	contents = arrayAlloc->get(other.capacity);
 		  	for(int i = 0; i < endIndex; i++){
-
+		  		arrayAlloc->construct(contents + i, other.contents[i]);
 		  	}
 		  }
 
@@ -447,23 +453,23 @@ namespace StevensDev{
 			}
 		}
 
-/*
+
 		template<typename T>
 		T const * const DynamicArray<T*>::operator[](unsigned int index)const {
 			return contents[index];
 		}
-*/
+
 		template<typename T>
 		T * DynamicArray<T*>::operator[](unsigned int index){
 			return *(contents + index);
 		}
+
 
 		template<typename T>
 		void DynamicArray<T*>::push(T* element){
 			enlarge();
 			arrayAlloc->construct(contents + endIndex, element);
 			endIndex++;
-			std::cout << "pointer push called \n";
 		}
 
 		template<typename T>

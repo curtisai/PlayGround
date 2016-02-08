@@ -17,20 +17,20 @@ copyClass::copyClass(string* otherPtr)
 }
 
 copyClass::copyClass(copyClass* other)
-: alloc(){
+: alloc(other->alloc){
 	ptr = alloc.get(1);
 	alloc.construct(ptr, *(other->ptr));
 	cout << "copyClass ptr constructor called \n";
 }
 
 copyClass::copyClass(const copyClass& other)
-: alloc(){
+: alloc(other.alloc){
 	ptr = alloc.get(1);
 	alloc.construct(ptr, *(other.ptr));
 	cout << "copy constructor called \n";
 }
 copyClass::copyClass(copyClass&& other)
-: alloc(){
+: alloc(other.alloc){
 	ptr = alloc.get(1);
 	ptr = other.ptr;
 	other.ptr = nullptr;
