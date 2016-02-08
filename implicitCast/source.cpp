@@ -1,11 +1,17 @@
 #include <iostream>
+#include <string>
 using std::string;
 using std::cout;
 using std::endl;
+/*
 class implicitCast{
   private:
-  	int value;  
+  	int value;
   public:
+  	implicitCast(){
+  		value = 0;
+  	}
+
   	implicitCast(implicitCast&& rval){
   		value = rval.value;
   		cout<<"move involved"<<endl;
@@ -25,8 +31,21 @@ implicitCast castTest(implicitCast x){
 	int k = x.getValue();
 	return k;
 }
+*/
+
+
+class ReferenceMember{
+  private:
+  	string& strRef;
+  public:
+  	ReferenceMember(string& init){ //:strRef(init){
+  		strRef = init;
+  	}
+};
 int main(){
-	implicitCast ptr(std::move(castTest(100)));
+	//implicitCast fakePtr(std::move(castTest(100)));
+	string fakePtr = "hello";
+	ReferenceMember refTest(fakePtr);
 	
 	/*
 	output:
@@ -63,3 +82,5 @@ int main(){
 
 	return 0;
 }
+
+

@@ -1,0 +1,5 @@
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+ADD_EXECUTABLE(test main.cpp)
+SET(CMAKE_CXX_FLAGS "-g")
+ADD_DEFINITIONS("-std=c++11")
+ADD_DEFINITIONS("-fno-elide-constructors")

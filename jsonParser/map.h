@@ -8,7 +8,7 @@
 #include <iostream>
 namespace sgdc{
 	using std::string;
-	/*
+	
 	template<typename T>
 	class ThePair{
 	  private:
@@ -27,7 +27,7 @@ namespace sgdc{
 	  			return pairElement;
 	  		}
 	};
-	*/
+	
 
 
 	template<typename T, template<typename> class NodeType>

@@ -1,4 +1,4 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
-ADD_EXECUTABLE(TRY main.cpp json_parser.h)
+ADD_EXECUTABLE(TRY main_old.cpp json_parser.h)
 SET(CMAKE_CXX_FLAGS "-g")
 ADD_DEFINITIONS(-std=c++11)

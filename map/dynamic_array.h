@@ -72,7 +72,8 @@ namespace sgdc{
 		T *temp =  contents;
 		contents = elementAllocator.get(expand + max, temp);
 		for(int i = 0; i <= max; i++){	
-            new (contents + i) T(temp[i]);//contents[i] = temp[i];
+			elementAllocator.construct(contents + i, temp[i]);
+            //new (contents + i) T(temp[i]);//contents[i] = temp[i];
 			temp[i].~T();
 		}
 		max = expand + max;
@@ -86,8 +87,8 @@ namespace sgdc{
 		T *temp =  contents;
 		contents = elementAllocator.get(expand + max, temp);
 		for(int i = 0; i <= max; i++){
-		    //elementAllocator.construct(contents + i, T(temp[i]))	
-            new (contents + i) T(std::move(temp[i]));//contents[i] = temp[i];
+		    elementAllocator.construct(contents + i, std::move(temp[i]));
+           // new (contents + i) T(std::move(temp[i]));//contents[i] = temp[i];
 			temp[i].~T();
 		}
 		max = expand + max;

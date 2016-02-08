@@ -20,9 +20,7 @@ namespace sgdc{
 	  		ThePair(const std::string& key, T&& element):pairKey(key),pairElement(std::move(element)){}
 	  		ThePair(const ThePair& pair):pairKey(pair.pairKey),pairElement(pair.pairElement){}
 	  		//ThePair():pairKey(),pairElement(){} //this might be not necessary
-	  		~ThePair(){
-	  			//pairElement.~T();
-	  		}
+	  		~ThePair(){}
 	  		const std::string& getKey(){
 	  			return pairKey;
 	  		}

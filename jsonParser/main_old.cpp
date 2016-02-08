@@ -12,29 +12,29 @@ int main(){
 	using std::endl;
     using std::cin;
 
+    string hello = "hello";
 	CountingAllocator<ThePair<string>> alloc;
 	Map<string, ThePair>* myMap;
-	/*
     for (int k = 0; k < 10; k++) {
         myMap = new Map<string, ThePair>(&alloc);
-        for (int i = 0; i < 100000; i++) {
-            myMap->push(std::to_string(i), "hello");
+        for (int i = 0; i < 100; i++) {
+            myMap->push(std::to_string(i), hello);
             if(!myMap->has(std::to_string(i)))cout<<"fail to find"<<endl;
         }
-        
         delete myMap;
     }
-    */
+    
     myMap = new Map<string, ThePair>(&alloc);
+    
         for (int i = 0; i < 1000; i++) {
-            myMap->push(std::to_string(i), "hello");
+            myMap->push(std::to_string(i), hello);
             if(!myMap->has(std::to_string(i)))cout<<"fail to find"<<endl;
         }
-        string k = myMap->remove("10");
+        string k = myMap->removeCopy("10");
         cout<<k<<"   "<<myMap->has("10")<<endl;
     cout<<"input"<<endl;
 
-   // DynamicArray<string> myValues = myMap->values();
+    //DynamicArray<string> myValues = myMap->values();
     //DynamicArray<string> myKeys = myMap->keys();
     
     string x;

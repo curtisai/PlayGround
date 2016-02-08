@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+</head>
+<body>
+<script type="text/javascript">
+	function ajaxFunction(){
+		var ajaxRequrest;
+		try{
+			ajaxRequrest = new XMLHttpRequest();
+		}
+		catch(e){
+			try{
+				ajaxRequrest = new ActiveXObject("Msxml2.XMLHTTP");
+			}
+			catch(e){
+				try{
+					ajaxRequrest = new ActiveXObject("Microsoft.XMLHTTP");
+				}
+				catch(e){
+					alert("fatal")
+					return false;
+				}
+			}
+		}
+		ajaxRequrest.onreadystatechange = function(){
+			if(ajaxRequrest.readyState == 4){
+				var ajaxDisplay = document.getElementById('ajaxDiv');
+				ajaxDisplay.innerHTML = ajaxRequrest.responseText;
+			}
+		}
+		var age = document.getElementById('age').value;
+		var wpm = document.getElementById('wpm').value;
+		var sex = document.getElementById('sex').value;
+
+		var queryString = "?age=" + age + "&wpm=" + wpm + "&sex=" +sex;
+
+		ajaxRequrest.open("GET", "ajax_example.php" + queryString, true);
+		ajaxRequrest.send(null);
+
+	}
+</script>
+<form name = "myForm">
+	Max age: <input type="text" id="age"/><br/>
+	Max wpm: <input type="text" id="wpm"/><br/>
+	Sex: <select id="sex">
+		    <option value="m">m</option>
+		    <option value="f">f</option>
+	     </select>
+	<input type="button" onclick="ajaxFunction()" value="Query Mysql"/>
+
+</form>
+<div id="ajaxDiv">Result</div>
+</body>
+</html>

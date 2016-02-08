@@ -16,20 +16,18 @@ int main(){
     CountingAllocator<string> strAlloc;
 	Map<string, sgdc::ThePair>* myMap;
     string hello = "hello";
-	/*
+	
     for (int k = 0; k < 10; k++) {
         myMap = new Map<string, ThePair>(&alloc);
-        for (int i = 0; i < 100000; i++) {
-            myMap->push(std::to_string(i), "hello");
+        for (int i = 0; i < 100; i++) {
+            myMap->push(std::to_string(i), hello);
             if(!myMap->has(std::to_string(i)))cout<<"fail to find"<<endl;
         }
-        
         delete myMap;
     }
-    */
+    
     myMap = new Map<string, sgdc::ThePair>(&alloc);
         for (int i = 0; i < 1000; i++) {
-
             myMap->push(std::to_string(i), hello);
             if(!myMap->has(std::to_string(i)))cout<<"fail to find"<<endl;
         }

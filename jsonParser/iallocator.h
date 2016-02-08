@@ -22,7 +22,7 @@ namespace sgdm{
 	  	virtual void release(T* address);  //assignment three
 	  	virtual void clean();
 
-	  	//virtual void construct(T* address, const T& element);  //assignment three
+	  	virtual void construct(T* address, const T& element);  //assignment three
 	  	virtual void construct(T* address, T&& element);  //assignment three
 	  	virtual void destruct(T* address, int count);
 
@@ -95,13 +95,13 @@ namespace sgdm{
 			address = nullptr;
 		}
 	}
-/*
+
 	template<typename T>   //assignment three
 	void IAllocator<T>::construct(T* address, const T& element){
 		new (address) T(element);
 	}
 
-	*/
+	
 
     
     
